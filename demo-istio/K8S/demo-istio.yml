@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-istio
+  labels:
+    app: demo-istio
+spec:
+  selector:
+    app: demo-istio
+  ports:
+    - port: 8080
+      name: http
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-istio-v1
+  labels:
+    app: demo-istio
+spec:
+  selector:
+    matchLabels:
+      app: demo-istio
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+      labels:
+        app: demo-istio
+        version: v1
+    spec:
+      containers:
+        - name: demo-istio
+          image: adama93/demo-istio:latest
+          ports:
+            - containerPort: 8080
